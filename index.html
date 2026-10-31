@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoServ Pro — Sistem Manajemen Bengkel</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">⚙</span>
+      <span class="brand-text">AutoServ<span class="brand-accent">Pro</span></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <a class="nav-item" data-page="customers">
+        <span class="nav-icon">◉</span> Pelanggan
+      </a>
+      <a class="nav-item" data-page="vehicles">
+        <span class="nav-icon">◎</span> Kendaraan
+      </a>
+      <a class="nav-item" data-page="mechanics">
+        <span class="nav-icon">◍</span> Mekanik
+      </a>
+      <a class="nav-item" data-page="services">
+        <span class="nav-icon">◐</span> Layanan Servis
+      </a>
+      <a class="nav-item" data-page="transactions">
+        <span class="nav-icon">◑</span> Transaksi Servis
+      </a>
+      <a class="nav-item" data-page="payments">
+        <span class="nav-icon">◒</span> Pembayaran
+      </a>
+      <a class="nav-item" data-page="history">
+        <span class="nav-icon">◓</span> Riwayat Servis
+      </a>
+    </nav>
+    <div class="sidebar-footer">v1.0 &copy; 2025</div>
+  </aside>
+
+  <!-- ===== TOPBAR ===== -->
+  <div class="topbar">
+    <button class="menu-toggle" id="menuToggle">&#9776;</button>
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-right">
+      <span id="currentDateTime"></span>
+    </div>
+  </div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+
+    <!-- ======= DASHBOARD ======= -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header"><h2>Dashboard</h2></div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">◉</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-total-customers">0</div>
+            <div class="stat-label">Total Pelanggan</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-green">◎</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-total-vehicles">0</div>
+            <div class="stat-label">Kendaraan Terdaftar</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-orange">◍</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-total-mechanics">0</div>
+            <div class="stat-label">Total Mekanik</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-yellow">◑</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-active-services">0</div>
+            <div class="stat-label">Servis Aktif</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-teal">◓</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-done-services">0</div>
+            <div class="stat-label">Servis Selesai</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-purple">◒</div>
+          <div class="stat-body">
+            <div class="stat-value" id="dash-total-revenue">Rp 0</div>
+            <div class="stat-label">Total Pendapatan</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header">
+          <h3>Aktivitas Servis Terbaru</h3>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>No. Servis</th>
+                <th>Pelanggan</th>
+                <th>Kendaraan</th>
+                <th>Layanan</th>
+                <th>Mekanik</th>
+                <th>Tgl Masuk</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dash-recent-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= CUSTOMERS ======= -->
+    <section class="page" id="page-customers">
+      <div class="page-header">
+        <h2>Manajemen Pelanggan</h2>
+        <button class="btn btn-primary" onclick="openAddCustomer()">+ Tambah Pelanggan</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-customers" placeholder="Cari nama / telepon…" oninput="renderCustomers()" />
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>ID</th><th>Nama</th><th>Telepon</th><th>Email</th><th>Alamat</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="customers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= VEHICLES ======= -->
+    <section class="page" id="page-vehicles">
+      <div class="page-header">
+        <h2>Manajemen Kendaraan</h2>
+        <button class="btn btn-primary" onclick="openAddVehicle()">+ Tambah Kendaraan</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-vehicles" placeholder="Cari no. polisi / pemilik…" oninput="renderVehicles()" />
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>No. Polisi</th><th>Pemilik</th><th>Merek</th><th>Model</th><th>Tahun</th><th>Jenis</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="vehicles-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= MECHANICS ======= -->
+    <section class="page" id="page-mechanics">
+      <div class="page-header">
+        <h2>Manajemen Mekanik</h2>
+        <button class="btn btn-primary" onclick="openAddMechanic()">+ Tambah Mekanik</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-mechanics" placeholder="Cari nama / ID mekanik…" oninput="renderMechanics()" />
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>ID</th><th>Nama</th><th>Telepon</th><th>Spesialisasi</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="mechanics-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= SERVICES ======= -->
+    <section class="page" id="page-services">
+      <div class="page-header">
+        <h2>Layanan Servis</h2>
+        <button class="btn btn-primary" onclick="openAddServiceType()">+ Tambah Layanan</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-services" placeholder="Cari nama layanan…" oninput="renderServices()" />
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>ID</th><th>Nama Layanan</th><th>Deskripsi</th><th>Est. Biaya</th><th>Est. Waktu</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="services-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= TRANSACTIONS ======= -->
+    <section class="page" id="page-transactions">
+      <div class="page-header">
+        <h2>Transaksi Servis</h2>
+        <button class="btn btn-primary" onclick="openAddTransaction()">+ Buat Transaksi</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-transactions" placeholder="Cari no. servis / pelanggan…" oninput="renderTransactions()" />
+          <select class="filter-select" id="filter-trx-status" onchange="renderTransactions()">
+            <option value="">Semua Status</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+            <option value="Menunggu Suku Cadang">Menunggu Suku Cadang</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>No. Servis</th><th>Pelanggan</th><th>Kendaraan</th><th>Mekanik</th><th>Tgl Masuk</th><th>Total Biaya</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="transactions-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAYMENTS ======= -->
+    <section class="page" id="page-payments">
+      <div class="page-header">
+        <h2>Pembayaran</h2>
+        <button class="btn btn-primary" onclick="openAddPayment()">+ Catat Pembayaran</button>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-payments" placeholder="Cari no. servis / pelanggan…" oninput="renderPayments()" />
+          <select class="filter-select" id="filter-pay-status" onchange="renderPayments()">
+            <option value="">Semua Status</option>
+            <option value="Belum Dibayar">Belum Dibayar</option>
+            <option value="Sebagian">Sebagian</option>
+            <option value="Lunas">Lunas</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>No. Servis</th><th>Pelanggan</th><th>Total Biaya</th><th>Terbayar</th><th>Sisa</th><th>Metode</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="payments-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= HISTORY ======= -->
+    <section class="page" id="page-history">
+      <div class="page-header"><h2>Riwayat Servis</h2></div>
+      <div class="section-card">
+        <div class="section-card-header">
+          <input class="search-input" type="text" id="search-history" placeholder="Cari pelanggan / no. polisi…" oninput="renderHistory()" />
+          <input class="search-input" type="date" id="filter-history-date" onchange="renderHistory()" style="max-width:160px" />
+          <select class="filter-select" id="filter-history-status" onchange="renderHistory()">
+            <option value="">Semua Status Servis</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+            <option value="Menunggu Suku Cadang">Menunggu Suku Cadang</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr><th>No. Servis</th><th>Pelanggan</th><th>No. Polisi</th><th>Mekanik</th><th>Layanan</th><th>Tgl Masuk</th><th>Total Biaya</th><th>Status Servis</th><th>Status Bayar</th></tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== SIDEBAR OVERLAY ===== -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ====================================================
+       MODALS
+  ===================================================== -->
+
+  <!-- MODAL: Customer -->
+  <div class="modal-backdrop" id="modal-customer">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-customer-title">Tambah Pelanggan</h3>
+        <button class="modal-close" onclick="closeModal('modal-customer')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="cust-id" />
+        <div class="form-group">
+          <label>Nama Lengkap <span class="req">*</span></label>
+          <input type="text" id="cust-name" placeholder="Masukkan nama lengkap" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nomor Telepon <span class="req">*</span></label>
+            <input type="text" id="cust-phone" placeholder="08xxxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="cust-email" placeholder="email@contoh.com" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Alamat</label>
+          <textarea id="cust-address" placeholder="Alamat lengkap"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-customer')">Batal</button>
+        <button class="btn btn-primary" onclick="saveCustomer()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Vehicle -->
+  <div class="modal-backdrop" id="modal-vehicle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-vehicle-title">Tambah Kendaraan</h3>
+        <button class="modal-close" onclick="closeModal('modal-vehicle')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="veh-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nomor Polisi <span class="req">*</span></label>
+            <input type="text" id="veh-plate" placeholder="B 1234 XYZ" />
+          </div>
+          <div class="form-group">
+            <label>Pemilik <span class="req">*</span></label>
+            <select id="veh-owner"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Merek <span class="req">*</span></label>
+            <input type="text" id="veh-brand" placeholder="Toyota, Honda, dll." />
+          </div>
+          <div class="form-group">
+            <label>Model <span class="req">*</span></label>
+            <input type="text" id="veh-model" placeholder="Avanza, Beat, dll." />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tahun <span class="req">*</span></label>
+            <input type="number" id="veh-year" placeholder="2020" min="1970" max="2030" />
+          </div>
+          <div class="form-group">
+            <label>Jenis Kendaraan <span class="req">*</span></label>
+            <select id="veh-type">
+              <option value="">-- Pilih Jenis --</option>
+              <option>Mobil</option>
+              <option>Motor</option>
+              <option>Truk</option>
+              <option>Bus</option>
+              <option>Lainnya</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Warna</label>
+          <input type="text" id="veh-color" placeholder="Hitam, Putih, dll." />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-vehicle')">Batal</button>
+        <button class="btn btn-primary" onclick="saveVehicle()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mechanic -->
+  <div class="modal-backdrop" id="modal-mechanic">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-mechanic-title">Tambah Mekanik</h3>
+        <button class="modal-close" onclick="closeModal('modal-mechanic')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="mec-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Lengkap <span class="req">*</span></label>
+            <input type="text" id="mec-name" placeholder="Nama mekanik" />
+          </div>
+          <div class="form-group">
+            <label>Nomor Telepon <span class="req">*</span></label>
+            <input type="text" id="mec-phone" placeholder="08xxxxxxxxxx" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Spesialisasi <span class="req">*</span></label>
+            <select id="mec-spec">
+              <option value="">-- Pilih Spesialisasi --</option>
+              <option>Mesin</option>
+              <option>Kelistrikan</option>
+              <option>Bodi & Cat</option>
+              <option>Transmisi</option>
+              <option>Sistem Rem</option>
+              <option>AC Kendaraan</option>
+              <option>Umum</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status Ketersediaan <span class="req">*</span></label>
+            <select id="mec-status">
+              <option value="Tersedia">Tersedia</option>
+              <option value="Sibuk">Sibuk</option>
+              <option value="Cuti">Cuti</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-mechanic')">Batal</button>
+        <button class="btn btn-primary" onclick="saveMechanic()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Service Type -->
+  <div class="modal-backdrop" id="modal-service">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-service-title">Tambah Layanan</h3>
+        <button class="modal-close" onclick="closeModal('modal-service')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="svc-id" />
+        <div class="form-group">
+          <label>Nama Layanan <span class="req">*</span></label>
+          <input type="text" id="svc-name" placeholder="Nama layanan servis" />
+        </div>
+        <div class="form-group">
+          <label>Deskripsi</label>
+          <textarea id="svc-desc" placeholder="Deskripsi layanan"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estimasi Biaya (Rp) <span class="req">*</span></label>
+            <input type="number" id="svc-cost" placeholder="50000" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Estimasi Waktu <span class="req">*</span></label>
+            <input type="text" id="svc-duration" placeholder="1-2 jam, 30 menit, dll." />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-service')">Batal</button>
+        <button class="btn btn-primary" onclick="saveServiceType()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Transaction -->
+  <div class="modal-backdrop" id="modal-transaction">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-transaction-title">Buat Transaksi Servis</h3>
+        <button class="modal-close" onclick="closeModal('modal-transaction')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="trx-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pelanggan <span class="req">*</span></label>
+            <select id="trx-customer" onchange="populateTrxVehicles()"></select>
+          </div>
+          <div class="form-group">
+            <label>Kendaraan <span class="req">*</span></label>
+            <select id="trx-vehicle"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mekanik <span class="req">*</span></label>
+            <select id="trx-mechanic"></select>
+          </div>
+          <div class="form-group">
+            <label>Tanggal Masuk <span class="req">*</span></label>
+            <input type="date" id="trx-date-in" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Layanan Servis <span class="req">*</span> <small>(pilih satu atau lebih)</small></label>
+          <div id="trx-services-checklist" class="services-checklist"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Biaya (otomatis)</label>
+            <input type="text" id="trx-total" readonly placeholder="Rp 0" style="background:var(--surface)" />
+          </div>
+          <div class="form-group">
+            <label>Est. Tanggal Selesai</label>
+            <input type="date" id="trx-est-done" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Keluhan Pelanggan</label>
+          <textarea id="trx-complaint" placeholder="Deskripsi keluhan pelanggan"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Hasil Pemeriksaan Mekanik</label>
+          <textarea id="trx-inspection" placeholder="Catatan pemeriksaan mekanik"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Status Pengerjaan</label>
+          <select id="trx-status">
+            <option value="Menunggu">Menunggu</option>
+            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+            <option value="Menunggu Suku Cadang">Menunggu Suku Cadang</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-transaction')">Batal</button>
+        <button class="btn btn-primary" onclick="saveTransaction()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Payment -->
+  <div class="modal-backdrop" id="modal-payment">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Catat Pembayaran</h3>
+        <button class="modal-close" onclick="closeModal('modal-payment')">&#10005;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pay-trx-id" />
+        <div class="form-group">
+          <label>No. Servis <span class="req">*</span></label>
+          <select id="pay-select-trx" onchange="populatePaymentInfo()"></select>
+        </div>
+        <div id="pay-info-box" class="info-box" style="display:none">
+          <div class="info-row"><span>Pelanggan:</span><strong id="pay-info-customer">—</strong></div>
+          <div class="info-row"><span>Kendaraan:</span><strong id="pay-info-vehicle">—</strong></div>
+          <div class="info-row"><span>Total Biaya:</span><strong id="pay-info-total">—</strong></div>
+          <div class="info-row"><span>Sudah Dibayar:</span><strong id="pay-info-paid">—</strong></div>
+          <div class="info-row"><span>Sisa:</span><strong id="pay-info-remaining" class="text-orange">—</strong></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Jumlah Pembayaran (Rp) <span class="req">*</span></label>
+            <input type="number" id="pay-amount" placeholder="0" min="0" oninput="updatePaymentRemaining()" />
+          </div>
+          <div class="form-group">
+            <label>Metode Pembayaran <span class="req">*</span></label>
+            <select id="pay-method">
+              <option value="Tunai">Tunai</option>
+              <option value="Transfer Bank">Transfer Bank</option>
+              <option value="QRIS">QRIS</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Pembayaran <span class="req">*</span></label>
+          <input type="date" id="pay-date" />
+        </div>
+        <div class="form-group">
+          <label>Catatan</label>
+          <textarea id="pay-note" placeholder="Catatan tambahan (opsional)"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-payment')">Batal</button>
+        <button class="btn btn-primary" onclick="savePayment()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Detail Transaction -->
+  <div class="modal-backdrop" id="modal-trx-detail">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>Detail Transaksi Servis</h3>
+        <button class="modal-close" onclick="closeModal('modal-trx-detail')">&#10005;</button>
+      </div>
+      <div class="modal-body" id="trx-detail-content"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-trx-detail')">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
